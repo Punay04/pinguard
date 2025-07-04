@@ -1,3 +1,4 @@
+import { monitorQueue } from "@/lib/queue";
 import client from "@/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -25,6 +26,18 @@ export async function POST(req: NextRequest) {
         url,
         userId: user.userId!,
       },
+    });
+
+    if (!data) {
+      return NextResponse.json({
+        message: "Something went wrong",
+      });
+    }
+
+    await monitorQueue.add("ping", {
+      websiteId: data.id,
+      url: data.url,
+      expectedStatus: 200,
     });
 
     return NextResponse.json({
