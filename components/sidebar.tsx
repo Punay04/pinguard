@@ -49,14 +49,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               Dashboard
             </Button>
           </SidebarGroupLabel>
+          <SidebarGroupLabel className="flex justify-center mt-3">
+            <Button
+              onClick={() => router.push("/dashboard/addWebsite")}
+              className="text-xl font-semibold bg-transparent"
+            >
+              Add Website
+            </Button>
+          </SidebarGroupLabel>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <div className="flex justify-center">
           <SignOutButton redirectUrl="/">
-          <Button className="font-semibold text-xl bg-blue-200">
-            Logout
-          </Button>
+            <Button className="font-semibold text-xl bg-blue-200">
+              Logout
+            </Button>
           </SignOutButton>
         </div>
       </SidebarFooter>

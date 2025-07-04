@@ -8,10 +8,9 @@ interface WebsiteProps {
   url: string;
 }
 
-const user = await auth();
-
 export async function POST(req: NextRequest) {
   const { name, url }: WebsiteProps = await req.json();
+  const user = await auth();
 
   if (!name || !url) {
     return NextResponse.json({
@@ -20,6 +19,20 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const existingWebsite = await client.website.findFirst({
+      where: {
+        url,
+        userId: user.userId!,
+        name
+      },
+    });
+
+    if (existingWebsite) {
+      return NextResponse.json({
+        message: "Website already exists",
+      });
+    }
+
     const data = await client.website.create({
       data: {
         name,
@@ -54,6 +67,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
+  const user = await auth();
   try {
     const websites = await client.website.findMany({
       where: {

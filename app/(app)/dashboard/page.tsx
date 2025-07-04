@@ -1,19 +1,17 @@
-import Navbar from "@/components/navbar";
-import { AppSidebar } from "@/components/sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+
 import React from "react";
 
-const Page = () => {
+const page = () => {
   return (
-    <div>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-         
-        </SidebarInset>
-      </SidebarProvider>
+    <div className="p-18">
+      <div className="p-4 bg-blue-50 rounded-md">
+        <h1 className="text-4xl font-bold">Dashboard...</h1>
+      </div>
+      <div className="p-4 bg-blue-50 rounded-md mt-4 ">
+      
+      </div>
     </div>
   );
 };
 
-export default Page;
+export default page;
