@@ -1,4 +1,3 @@
-// workers/scheduler.ts
 import cron from "node-cron";
 import client from "@/prisma";
 import { monitorQueue } from "@/lib/queue";
