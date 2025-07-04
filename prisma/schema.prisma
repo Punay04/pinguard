@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Website {
+  id       String    @id @default(uuid())
+  name     String
+  url      String
+  userId   String
+  isPaused     Boolean  @default(false)
+  checkInterval Int    @default(5000)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  results    CheckResult[]
+  emails    Email[]
+}
+
+model CheckResult {
+  id        String    @id @default(uuid())
+  monitorId String
+  statusCode    Int
+  responseTime  Int
+  isUp          Boolean
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  website Website @relation(fields: [monitorId], references: [id])
+}
+
+model Email {
+  id        String    @id @default(uuid())
+  email     String
+  websiteId   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  webiste Website @relation(fields: [websiteId], references: [id])
+}
