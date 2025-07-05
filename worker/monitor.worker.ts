@@ -2,12 +2,12 @@ import { Worker } from "bullmq";
 import axios from "axios";
 import IORedis from "ioredis";
 import { sendAlertEmail } from "@/lib/mail";
-import { currentUser } from "@clerk/nextjs/server";
 import client from "@/prisma";
+import { headers } from "next/headers";
 
-const connection = new IORedis(process.env.REDIS_URL!);
-
-const user = await currentUser();
+const connection = new IORedis(process.env.REDIS_URL!, {
+  maxRetriesPerRequest: null,
+});
 
 const worker = new Worker(
   "monitor",
@@ -20,7 +20,13 @@ const worker = new Worker(
 
     try {
       const time = Date.now();
-      const res = await axios.get(url, { timeout: 1000 });
+      const res = await axios.get(url, {
+        timeout: 1000,
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+        },
+      });
       const isUp = res.status === expectedStatus;
 
       await client.checkResult.create({
@@ -37,7 +43,7 @@ const worker = new Worker(
         // email sent
 
         const email = await sendAlertEmail(
-          String(user?.emailAddresses),
+          String(job.data.email),
           websiteId,
           url
         );

@@ -1,6 +1,6 @@
 import { monitorQueue } from "@/lib/queue";
 import client from "@/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 interface WebsiteProps {
@@ -10,7 +10,13 @@ interface WebsiteProps {
 
 export async function POST(req: NextRequest) {
   const { name, url }: WebsiteProps = await req.json();
-  const user = await auth();
+  const user = await currentUser();
+
+  if(!user) {
+    return NextResponse.json({
+      message: "Unauthorized",
+    });
+  }
 
   if (!name || !url) {
     return NextResponse.json({
@@ -22,7 +28,7 @@ export async function POST(req: NextRequest) {
     const existingWebsite = await client.website.findFirst({
       where: {
         url,
-        userId: user.userId!,
+        userId: user.id!,
         name
       },
     });
@@ -37,7 +43,7 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         url,
-        userId: user.userId!,
+        userId: user.id!,
       },
     });
 
@@ -51,6 +57,7 @@ export async function POST(req: NextRequest) {
       websiteId: data.id,
       url: data.url,
       expectedStatus: 200,
+      email : user.emailAddresses[0].emailAddress
     });
 
     return NextResponse.json({
@@ -73,7 +80,10 @@ export async function GET() {
       where: {
         userId: user.userId!,
       },
-    });
+      include : {
+        results : true
+      }
+    })
 
     return NextResponse.json({
       message: "Websites fetched successfully",

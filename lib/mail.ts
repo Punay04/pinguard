@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const resend = new Resend("re_aHZPjePE_44hygVLLz5Mx6RJfqTSYtoU7");
 
 export async function sendAlertEmail(
   to: string,

@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "worker": "ts-node workers/monitor.worker.ts",
-    "scheduler": "ts-node workers/scheduler.ts"
+    "worker": "ts-node -r tsconfig-paths/register -P tsconfig.worker.json worker/monitor.worker.ts",
+    "scheduler": "ts-node -r tsconfig-paths/register -P tsconfig.worker.json worker/scheduler.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.3",
@@ -40,14 +40,16 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^20.19.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "prisma": "^6.11.1",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tw-animate-css": "^1.3.5",
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   }
 }
