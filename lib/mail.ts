@@ -9,7 +9,7 @@ export async function sendAlertEmail(
 ) {
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "pinguard@gmail.com",
       to,
       subject: `🚨 ${websiteName} is DOWN!`,
       html: `<p>The website <strong>${websiteName}</strong> (<a href="${websiteUrl}">${websiteUrl}</a>) appears to be <span style="color: red;">DOWN</span>.</p>`,

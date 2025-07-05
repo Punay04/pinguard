@@ -3,15 +3,17 @@ import axios from "axios";
 import IORedis from "ioredis";
 import { sendAlertEmail } from "@/lib/mail";
 import client from "@/prisma";
-import { headers } from "next/headers";
 
 const connection = new IORedis(process.env.REDIS_URL!, {
   maxRetriesPerRequest: null,
 });
 
+console.log("👷 Worker process booted...");
+
 const worker = new Worker(
   "monitor",
   async (job) => {
+    console.log("🚀 Worker started...");
     const { websiteId, url, expectedStatus = 200 } = job.data;
 
     if (!websiteId || !url || !expectedStatus) {
@@ -19,6 +21,7 @@ const worker = new Worker(
     }
 
     try {
+      console.log("📥 New job received:", job.data);
       const time = Date.now();
       const res = await axios.get(url, {
         timeout: 1000,
@@ -47,6 +50,8 @@ const worker = new Worker(
           websiteId,
           url
         );
+      } else {
+        console.log(`✅ ${url} is UP (${res.status})`);
       }
     } catch (error) {
       await client.checkResult.create({
@@ -61,3 +66,19 @@ const worker = new Worker(
   },
   { connection, concurrency: 5 }
 );
+
+worker.on("active", (job) => {
+  console.log("🏃‍♂️ Job is now being processed:", job.data);
+});
+
+worker.on("completed", (job) => {
+  console.log("📤 Job completed:", job.data);
+});
+
+worker.on("failed", (job, err) => {
+  if (job) {
+    console.log("📤 Job failed:", job.data, err);
+  } else {
+    console.log("📤 Job failed with unknown job:", err);
+  }
+});
