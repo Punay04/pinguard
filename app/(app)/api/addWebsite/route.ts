@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const { name, url }: WebsiteProps = await req.json();
   const user = await currentUser();
 
-  if(!user) {
+  if (!user) {
     return NextResponse.json({
       message: "Unauthorized",
     });
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       where: {
         url,
         userId: user.id!,
-        name
+        name,
       },
     });
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       websiteId: data.id,
       url: data.url,
       expectedStatus: 200,
-      email : user.emailAddresses[0].emailAddress
+      email: user.emailAddresses[0].emailAddress,
     });
 
     return NextResponse.json({
@@ -80,14 +80,51 @@ export async function GET() {
       where: {
         userId: user.userId!,
       },
-      include : {
-        results : true
+      include: {
+        results: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       }
-    })
+    });
 
     return NextResponse.json({
       message: "Websites fetched successfully",
       websites,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Something went wrong",
+      error,
+    });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const { websiteId } = await req.json();
+
+  if (!websiteId) {
+    return NextResponse.json({
+      message: "Missing data",
+    });
+  }
+
+  try {
+
+    const results = await client.checkResult.deleteMany({
+      where: {
+        monitorId: websiteId,
+      },
+    });
+
+    const website = await client.website.delete({
+      where: {
+        id: websiteId,
+      },
+    });
+    return NextResponse.json({
+      message: "Website deleted successfully",
+      website,
     });
   } catch (error) {
     return NextResponse.json({

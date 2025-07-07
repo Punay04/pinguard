@@ -8,12 +8,9 @@ const connection = new IORedis(process.env.REDIS_URL!, {
   maxRetriesPerRequest: null,
 });
 
-console.log("👷 Worker process booted...");
-
 const worker = new Worker(
   "monitor",
   async (job) => {
-    console.log("🚀 Worker started...");
     const { websiteId, url, expectedStatus = 200 } = job.data;
 
     if (!websiteId || !url || !expectedStatus) {
@@ -21,7 +18,6 @@ const worker = new Worker(
     }
 
     try {
-      console.log("📥 New job received:", job.data);
       const time = Date.now();
       const res = await axios.get(url, {
         timeout: 1000,
